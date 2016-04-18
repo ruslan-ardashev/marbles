@@ -40,6 +40,12 @@ html
 				});
 				function showPanel(show){
 					if(show == '') show = 'home';										//default
+
+					//- console.log("ruslan: " + show);
+
+					//- console.log("ruslan: "+window.location.pathname);
+					//- console.log("ruslan: "+window.location.pathname.substring(0,3));		//- "/p1" or "/p2"
+
 					var part = window.location.pathname.substring(0,3);
 					window.history.pushState({},'', part + '/' + show);					//put it in url so we can f5
 
@@ -79,7 +85,7 @@ html
 				});
 				
 				//Page refresh show correct panel
-				var pos = window.location.pathname.substring(1).indexOf('/');			//skipping first char find first slash
+				var pos = window.location.pathname.substring(1).indexOf('/');			// skipping first char find first slash
 				if(pos >= 0){
 					showPanel(window.location.pathname.substring(2 + pos).toLowerCase());
 				}
@@ -87,7 +93,9 @@ html
 				$(".colorInput").click(function(){	//do not remove! no idea why but this helps safari open the color picker
 					console.log('...');
 				});
+
 			});
+			
 		block custom_header
 		
 		body

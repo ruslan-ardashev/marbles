@@ -33,10 +33,10 @@ router.route('/p1/:page?').get(function(req, res){
 // Part 2
 // ============================================================================================================================
 router.route('/p2').get(function(req, res){
-	res.render('part2', {title: 'Marbles Part 2', bag: {setup: setup, e: process.error}} );
+	res.render('part2', {title: 'Trade Creation Demo', bag: {setup: setup, e: process.error}} );
 });
 router.route('/p2/:page?').get(function(req, res){
-	res.render('part2', {title: 'Marbles Part 2', bag: {setup: setup, e: process.error}} );
+	res.render('part2', {title: 'Trade Creation Demo', bag: {setup: setup, e: process.error}} );
 });
 
 module.exports = router;

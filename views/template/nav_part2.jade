@@ -1,12 +1,12 @@
-#logo MARBLES P2
+#logo Trade
 
 #linkWraps
 	// there is JS code that will show the corresponding panel to the clicked navigation div.
 	// ie: clicking <div class="nav">HOME</div> will show panel #homePanel
 	// this code is in layout.jade
 	.nav#homeLink HOME
-	.nav#createLink CREATE
-	.nav#tradeLink TRADE
+	.nav#submitTradeLink SUBMIT
+	.nav#enrichSettleLink SETTLE
 	
 #whoAmI
 	span.fa.fa-user#userIcon
@@ -19,3 +19,5 @@
 			span #{bag.setup.USER1.toUpperCase()} &nbsp;&nbsp;
 		.userLine(name="#{bag.setup.USER2}")
 			span #{bag.setup.USER2.toUpperCase()}&nbsp;&nbsp;
+		.userLine(name="#{bag.setup.USER3}")
+			span #{bag.setup.USER3.toUpperCase()}&nbsp;&nbsp;

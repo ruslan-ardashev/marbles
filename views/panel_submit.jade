@@ -1,0 +1,57 @@
+#submitPanel(hidden).panel
+	h1 Create &amp; Submit Trade
+	hr
+	
+	#innerWrap
+		span.createball
+		
+		form(action="/create" method="POST")#createform
+			legend 
+				input(type="text" name="tradedate" placeholder="Please enter trade date")
+				span.hint &nbsp;&nbsp;TRADE DATE IN FORMAT XX/XX/XXXX
+			br
+
+			legend 
+				input(type="text" name="valuedate" placeholder="Please enter value date")
+				span.hint &nbsp;&nbsp;VALUE DATE IN FORMAT XX/XX/XXXX
+			br
+
+			legend 
+				select(name="operation")
+					option(value="BUY" disabled="disabled" selected="selected") Operation
+					option(value="BUY") Buy
+					option(value="SELL") Sell
+				span.hint &nbsp;&nbsp;BUY / SELL
+			br
+
+			legend 
+				input(type="text" name="quantity" placeholder="Please enter integer quantity")
+				span.hint &nbsp;&nbsp;INTEGER QUANTITY OF SHARES
+			br
+
+			legend 
+				input(type="text" name="security" placeholder="Please enter name of security")
+				span.hint &nbsp;&nbsp;SECURITY (STOCK TICKER FORMAT e.g. IBM)
+			br
+
+			legend 
+				input(type="text" name="price" placeholder="Please enter desired price of security")
+				span.hint &nbsp;&nbsp;DESIRED EXECUTION PRICE OF TRADE
+			br
+
+			legend 
+				input(type="text" name="counterparty" placeholder="Please enter name of counterparty")
+				span.hint &nbsp;&nbsp;COUNTERPARTY
+			br
+
+			//- legend 
+			//- 	select(name="user")
+			//- 		option(value="#{bag.setup.USER1}" disabled="disabled" selected="selected") User
+			//- 		option(value="#{bag.setup.USER1}") #{bag.setup.USER1.substring(0,1).toUpperCase() + bag.setup.USER1.substring(1)}
+			//- 		option(value="#{bag.setup.USER2}") #{bag.setup.USER2.substring(0,1).toUpperCase() + bag.setup.USER2.substring(1)}
+
+			button(type="button")#submitTrade
+				span.fa.fa-check &nbsp;&nbsp;
+				span SUBMIT TRADE
+			
+			
