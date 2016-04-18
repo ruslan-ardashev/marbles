@@ -37,19 +37,44 @@ $(document).on('ready', function() {
 						v: 2
 					};
 
-		if(obj.user && obj.security && obj.price) {
+		if(obj.user && obj.security && obj.timestamp) {
 
 			console.log('creating trade, sending', obj);
 			ws.send(JSON.stringify(obj));
 			$('.panel').hide();
 			$('#homePanel').show();
-			// $('.colorValue').html('Color');										//reset
 
-			// ruslan: changed
-			// for(var i in bgcolors) $('.createball').removeClass(bgcolors[i]);			//reset
+		}
 
-			console.log("would normally call createBall but we're going to wait for chaincode confirmation");
-			// $('.createball').css('border', '2px dashed #fff');						//reset
+		return false;
+
+	});
+
+	$('#reviseTrade').click(function() {
+
+		// change to only have two arguments
+		var obj = 	{
+						type: 'create_and_submit_trade',
+						tradedate: $('input[name="tradedate"]').val(),
+						valuedate: $('input[name="valuedate"]').val(),
+						operation: $('select[name="operation"]').val(),
+						quantity: $('input[name="quantity"]').val(),
+						security: $('input[name="security"]').val(),
+						price: $('input[name="price"]').val(),
+						counterparty: $('input[name="counterparty"]').val(),
+						user: bag.setup.USER2,
+						timestamp: time,
+						settled: 0,
+						needsrevision: 0,
+						v: 2
+					};
+
+		if(obj.user && obj.security && obj.timestamp) {
+
+			console.log('creating trade, sending', obj);
+			ws.send(JSON.stringify(obj));
+			$('.panel').hide();
+			$('#homePanel').show();
 
 		}
 
@@ -70,14 +95,75 @@ $(document).on('ready', function() {
 		// $('input[name="name"]').val('r' + randStr(6));
 
 	});
-	
-	$('#enrichSettleLink').click(function(){
+
+	$('#enrichSettleTradeButton').click(function(){
 
 		console.log("enrichSettleLink activated");
-		// ws.send(JSON.stringify({type: 'get_open_trades', v: 2}));
+		ws.send(JSON.stringify({type: 'enrich_and_settle', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
 
 	});
-	
+
+	$('#markRevisionNecessaryButton').click(function(){
+
+		console.log("mark_revision_needed activated");
+		ws.send(JSON.stringify({type: 'mark_revision_needed', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
+
+	});
+
+	// listen to clicks on the trade boxes that we move around
+	$(document).on("click", ".clickableTradeBox", function(){
+
+		var trade = bag.trades[this.id];
+
+		if (bag.clickedTradeBoxTimestamp == null) bag.clickedTradeBoxTimestamp = "";
+		bag.clickedTradeBoxTimestamp = this.id;
+
+		console.log();console.log("found trade", trade);console.log();
+
+		if (user.username == bag.setup.USER1) {
+
+			console.log(this.id + " got clicked by client");
+
+		} else if (user.username == bag.setup.USER2) {
+
+			console.log(this.id + " got clicked by broker");	// (only) logical next step = settle screen
+
+			$('.panel').hide();
+			$('#settlePanel').show(0).delay(500, function() {
+
+				$("#settlePanelTradeDate")[0].value = trade.tradedate;
+				$("#settlePanelValueDate")[0].value = trade.valuedate;
+
+				var optionsNodes = $("#settlePanelOperation")[0].childNodes;
+				if (trade.option == 'buy') {
+					optionsNodes[0].selected = false;
+					optionsNodes[1].selected = true;
+					optionsNodes[2].selected = false;
+				} else {
+					optionsNodes[0].selected = false;
+					optionsNodes[1].selected = false;
+					optionsNodes[2].selected = true;
+				}
+
+				$("#settlePanelQuantity")[0].value = trade.quantity;
+				$("#settlePanelSecurity")[0].value = trade.security;
+				$("#settlePanelPrice")[0].value = trade.price;
+				$("#settlePanelCounterparty")[0].value = trade.counterparty;
+
+			});
+
+		} else if (user.username == bag.setup.USER3) {
+
+			console.log(this.id + " got clicked by observer");
+
+		}
+
+		// homePanel, submitPanel, revisePanel, settlePanel
+		// $('.panel').hide();
+		// $('#homePanel').show();
+
+	});
+
 	//marble color picker
 	// $(document).on('click', '.colorInput', function(){
 	// 	$('.colorOptionsWrap').hide();											//hide any others
@@ -155,12 +241,20 @@ $(document).on('ready', function() {
 	
 	//login events
 	$('#whoAmI').click(function(){												//drop down for login
-		if($('#userSelect').is(':visible')){
+		
+		$('.panel').hide();
+		$('#homePanel').show();
+
+		if ($('#userSelect').is(':visible')) {
+
 			$('#userSelect').fadeOut();
-		}
-		else{
+
+		} else {
+
 			$('#userSelect').fadeIn();
+
 		}
+
 	});
 	
 	$('.userLine').click(function(){												//log in as someone else
@@ -172,9 +266,92 @@ $(document).on('ready', function() {
 		$('#userSelect').fadeOut(300);
 		$('select option[value="' + user.username + '"]').attr('selected', true);
 
-		// ws.send(JSON.stringify({type: 'get_open_trades', v: 2}));
-		// set_my_color_options(user.username);
-		// build_trades(bag.trades);
+		// appropriately hide elements
+		if (user.username == bag.setup.USER1) {
+
+			// nav_part
+			if($('#submitTradeLink').is(':hidden')){
+				$('#submitTradeLink').fadeIn(0);
+			}
+
+			if($('#reviseTradeLink').is(':hidden')){
+				$('#reviseTradeLink').fadeIn(0);
+			}
+
+			if($('#enrichSettleLink').is(':visible')){
+				$('#enrichSettleLink').fadeOut(0);
+			}
+
+			// homePanel
+			if($('#user2wrap').is(':visible')){
+				$('#user2wrap').fadeOut(0);
+			}
+
+			if($('#user3wrap').is(':visible')){
+				$('#user3wrap').fadeOut(0);
+			}
+
+			if($('#user1wrap').is(':hidden')){
+				$('#user1wrap').fadeIn(0);
+			}
+
+		} else if (user.username == bag.setup.USER2) {
+
+			// nav_part
+			if($('#enrichSettleLink').is(':hidden')){
+				$('#enrichSettleLink').fadeIn(0);
+			}
+
+			if($('#submitTradeLink').is(':visible')){
+				$('#submitTradeLink').fadeOut(0);
+			}
+
+			if($('#reviseTradeLink').is(':visible')){
+				$('#reviseTradeLink').fadeOut(0);
+			}
+
+			// homePanel
+			if($('#user1wrap').is(':visible')){
+				$('#user1wrap').fadeOut(0);
+			}
+
+			if($('#user3wrap').is(':visible')){
+				$('#user3wrap').fadeOut(0);
+			}
+
+			if($('#user2wrap').is(':hidden')){
+				$('#user2wrap').fadeIn(0);
+			}
+
+		} else if (user.username == bag.setup.USER3) {
+
+			// nav_part
+			if($('#submitTradeLink').is(':visible')){
+				$('#submitTradeLink').fadeOut(0);
+			}
+
+			if($('#enrichSettleLink').is(':visible')){
+				$('#enrichSettleLink').fadeOut(0);
+			}
+
+			if($('#reviseTradeLink').is(':visible')){
+				$('#reviseTradeLink').fadeOut(0);
+			}
+
+			// homePanel
+			if($('#user2wrap').is(':visible')){
+				$('#user2wrap').fadeOut(0);
+			}
+
+			if($('#user1wrap').is(':visible')){
+				$('#user1wrap').fadeOut(0);
+			}
+
+			if($('#user3wrap').is(':hidden')){
+				$('#user3wrap').fadeIn(0);
+			}
+
+		}
 
 	});
 	
@@ -203,34 +380,34 @@ $(document).on('ready', function() {
 	
 	// $('.removeWilling:first').hide();
 
-	$('#addMarbleButton').click(function(){
+	// $('#addMarbleButton').click(function(){
 
-		var count = 0;
-		var marble_count = 0;
-		$('.willingWrap').each(function(){
-			count++;
-		});
-		for(var i in bag.marbles){
-			if(bag.marbles[i].user.toLowerCase() == user.username.toLowerCase()){
-				marble_count++;
-			}
-		}
-		if(count+1 <= marble_count && count <= 3){									//lets limit the total number... might get out of hand
-			var temp = $('.willingWrap:first').html();
-			$('.willingWrap:first').parent().append('<div class="willingWrap">' + temp + '</div>');
-			$('.removeWilling').show();
-			$('.removeWilling:first').hide();
-		}
-		else{
-			$('#cannotAdd').fadeIn();
-			setTimeout(function(){ $('#cannotAdd').fadeOut(); }, 1500);
-		}
+	// 	var count = 0;
+	// 	var marble_count = 0;
+	// 	$('.willingWrap').each(function(){
+	// 		count++;
+	// 	});
+	// 	for(var i in bag.marbles){
+	// 		if(bag.marbles[i].user.toLowerCase() == user.username.toLowerCase()){
+	// 			marble_count++;
+	// 		}
+	// 	}
+	// 	if(count+1 <= marble_count && count <= 3){									//lets limit the total number... might get out of hand
+	// 		var temp = $('.willingWrap:first').html();
+	// 		$('.willingWrap:first').parent().append('<div class="willingWrap">' + temp + '</div>');
+	// 		$('.removeWilling').show();
+	// 		$('.removeWilling:first').hide();
+	// 	}
+	// 	else{
+	// 		$('#cannotAdd').fadeIn();
+	// 		setTimeout(function(){ $('#cannotAdd').fadeOut(); }, 1500);
+	// 	}
 
-	});
+	// });
 	
-	$(document).on('click', '.removeWilling', function(){
-		$(this).parent().remove();
-	});
+	// $(document).on('click', '.removeWilling', function(){
+	// 	$(this).parent().remove();
+	// });
 	
 	// $('#tradeSubmit').click(function(){
 	// 	var msg = 	{
@@ -370,6 +547,10 @@ function connect_to_server() {
 		ws.onmessage = function(evt) { onMessage(evt); };
 		ws.onerror = function(evt) { onError(evt); };
 
+		console.log("part2.js - connect() - ws:");
+		console.log(ws);
+		console.log();
+
 	}
 	
 	function onOpen(evt){
@@ -379,7 +560,7 @@ function connect_to_server() {
 		clear_blocks();
 		$('#errorNotificationPanel').fadeOut();
 		ws.send(JSON.stringify({type: 'chainstats', v:2}));
-		ws.send(JSON.stringify({type: 'get', v:2}));
+		ws.send(JSON.stringify({type: 'read_all_trades', v:2}));
 		// ws.send(JSON.stringify({type: 'get_open_trades', v: 2}));
 
 	}
@@ -389,7 +570,7 @@ function connect_to_server() {
 		console.log('WS DISCONNECTED', evt);
 		connected = false;
 		setTimeout(function(){ connect(); }, 5000);					//try again one more time, server restarts are quick
-		
+
 	}
 
 	function onMessage(msg) {
@@ -397,11 +578,11 @@ function connect_to_server() {
 		try {
 
 			var data = JSON.parse(msg.data);
-			console.log("ruslan: ");
-			console.log(data);
-			// console.log("received in onMessage(msg), responding" + ", data.message: " + data.msg + ", data: " + data);
+			console.log("ruslan onMessage: " + data.msg);
 
-			else if (data.msg === 'chainstats') {
+			if (data.msg === 'chainstats') {
+
+				console.log("ruslan: REACHING HERE 1");
 
 				var e = formatDate(data.blockstats.transactions[0].timestamp.seconds * 1000, '%M/%d/%Y &nbsp;%I:%m%P');
 				$('#blockdate').html('<span style="color:#fff">TIME</span>&nbsp;&nbsp;' + e + ' UTC');
@@ -415,11 +596,15 @@ function connect_to_server() {
 
 			} else if (data.msg === 'reset') {							//clear marble knowledge, prepare of incoming marble states
 
+				console.log("ruslan: REACHING HERE 2");
+
 				$('#user3wrap').html('');
 				$('#user2wrap').html('');
 				$('#user1wrap').html('');
 
 			} else if (data.msg === 'trades') {
+
+				console.log("ruslan: REACHING HERE 3");
 
 				if (data.trade) {
 
@@ -460,45 +645,34 @@ function connect_to_server() {
 // =================================================================================
 //	UI Building
 // =================================================================================
-// ruslan: build trade instead of ball here. find way to write text on top.
-function build_trade(data) {
+function build_trade(trade) {
 
 	var html = '';
-	var colorClass = '';
-	var size = 'fa-5x';
-	var notYours = 'notyours';
-	
-	data.name = escapeHtml(data.name);
-	data.color = escapeHtml(data.color);
-	data.user = escapeHtml(data.user);
 	
 	if(!bag.trades) bag.trades = {};
 
-	if (data.timestamp) {
-		bag.trades[data.timestamp] = data;								//store the trade for posterity
+	var timestamp = "";
+
+	if (trade.timestamp != null) {
+
+		timestamp = String(trade.timestamp);
+		bag.trades[timestamp] = trade;								//store the trade for posterity
+
 	} else {
 		console.log("ruslan: ERROR creating bag.trades[key], no timestamp present");
 	}
 
-	if(data.user.toLowerCase() == user.username.toLowerCase()) notYours = '';
-	
-	console.log('got a trade');
+	html += '<span id = "' + timestamp + '" title = "' + trade.security + '" class="clickableTradeBox nav fa fa-5x fa-border"><p class="fa fa-fw white" style="width: 175px; height: 75px; text-align: center;">' + trade.security.toUpperCase() + '</p><br/><p class="hint" style="font-size: 16px;">Time: ' +timestamp + '</p><p class="hint" style="font-size: 16px;">Price: ' + trade.price + '</p><p class="hint" style="font-size: 16px;">Quantity: ' + trade.quantity + '</p><p class="hint" style="font-size: 16px;">Trade Date: ' + trade.tradedate + '</p><p class="hint" style="font-size: 16px;">Value Date: ' + trade.valuedate + '</p></span>';
 
-	if(!$('#' + data.name).length){								//only populate if it doesn't exists
-		console.log('building');
-		if(data.size == 16) size = 'fa-3x';
-		if(data.color) colorClass = data.color.toLowerCase();
-		
-		html += '<span id="' + data.name + '" class="fa fa-circle ' + size + ' ball ' + colorClass + ' ' + notYours + '" title="' + data.name + '" user="' + data.user + '"></span>';
-		console.log('yo', html);
-		if(data.user && data.user.toLowerCase() == bag.setup.USER1){
-			$('#user1wrap').append(html);
-		}
-		else{
-			$('#user2wrap').append(html);
-		}
+	if (trade.user == bag.setup.USER1) {
+		$('#user1wrap').append(html);
+		$('#user3wrap').append(html);
+	} else if (trade.user == bag.setup.USER2) {
+		$('#user2wrap').append(html);
 	}
-	//console.log('marbles', bag.marbles);
+
+	console.log('trades', bag.trades);
+
 }
 
 // function build_trades(trades){

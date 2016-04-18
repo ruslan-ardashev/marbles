@@ -12,18 +12,19 @@ module.exports.setup = function(sdk, cc){
 
 module.exports.process_msg = function(ws, data) {
 
-	console.log("data defined?: " + data);
-
 	if (data.v === 2) {
+
+		console.log();
+		console.log("data:");
+		console.log(data);
+		console.log();
 
 		if (data.type == 'chainstats') {
 
 			console.log('chainstats msg');
 			ibc.chain_stats(cb_chainstats);
 
-		}
-
-		else if (data.type == 'create_and_submit_trade') {
+		} else if (data.type == 'create_and_submit_trade') {
 
 			console.log('its a create_and_submit_trade!');
 
@@ -33,27 +34,40 @@ module.exports.process_msg = function(ws, data) {
 				console.log("forgot an argument in create_and_submit_trade in ws_part2.js");
 			}
 
-		}
-
-		else if (data.type == 'read_all_trades') {
+		} else if (data.type == 'read_all_trades') {
 
 			console.log('ruslan: read_all_trades');
 			chaincode.query.read(['_tradeindex'], cb_got_index);
 
+		} else if (data.type == 'enrich_and_settle') {
+
+			console.log('ruslan: enrich_and_settle');
+			chaincode.invoke.enrich_and_settle([data.timestamp, data.user], inefficientCallback);
+
+		} else if (data.type == 'mark_revision_needed') {
+
+			console.log('ruslan: mark_revision_needed');
+			chaincode.invoke.mark_revision_needed([data.timestamp, data.user], inefficientCallback);
+
+		} else if (data.type == 'mark_revised') {
+
+			console.log('ruslan: mark_revised');
+			chaincode.invoke.mark_revised([data.timestamp, data.user], inefficientCallback);
+
 		}
 
-		// wss.broadcast({msg: 'trades', trade: trade});
+	}
 
-		// else if(data.type == 'transfer'){
-		// 	console.log('transfering msg');
-		// 	if(data.name && data.user){
-		// 		chaincode.invoke.set_user([data.name, data.user]);
-		// 	}
-		// }
+	// for three of the methods above (for now) clear old trades and pull fresh data
+	// add callbacks for revision methods to move trades around, for now slightly inefficient re-read
+	function inefficientCallback(e, data) {
+
+		sendMsg({msg: 'reset'});
+		chaincode.query.read(['_tradeindex'], cb_got_index);
 
 	}
 	
-	//got the trade index, lets get each trade
+	// got the trade index, lets get each trade
 	function cb_got_index(e, index) {
 
 		if(e != null) console.log('error:', e);
@@ -121,7 +135,7 @@ module.exports.process_msg = function(ws, data) {
 	}
 
 	//send a message, socket might be closed...
-	function sendMsg(json){
+	function sendMsg(json) {
 		if(ws){
 			try{
 				ws.send(JSON.stringify(json));
@@ -129,6 +143,8 @@ module.exports.process_msg = function(ws, data) {
 			catch(e){
 				console.log('error ws', e);
 			}
+		} else {
+			console.log("warning no ws found in sendMsg of ws_part2.js");
 		}
 	}
 };

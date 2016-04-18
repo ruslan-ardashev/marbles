@@ -140,103 +140,103 @@ var manual ={
   "credentials": {
     "peers": [
       {
-        "discovery_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp1-discovery.blockchain.ibm.com",
+        "discovery_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp1-discovery.blockchain.ibm.com",
         "discovery_port": 30303,
-        "api_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp1-api.blockchain.ibm.com",
+        "api_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp1-api.blockchain.ibm.com",
         "api_port_tls": 443,
         "api_port": 80,
         "type": "peer",
-        "network_id": "2915662a-7af9-4932-b9fe-e83adb30adcd",
-        "container_id": "1ecca7975583ff2125cd9386cc4e7c3eb5df8b20a1474568ea2e58874e05df78",
-        "id": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp1",
-        "api_url": "http://2915662a-7af9-4932-b9fe-e83adb30adcd_vp1-api.blockchain.ibm.com:80"
+        "network_id": "1bcd77d1-90db-4cbb-8381-88e5d6641104",
+        "container_id": "e7de8c680d1537091964bc1fe4e905339fbdbaa911d7301f92a20707f9f4ea1c",
+        "id": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp1",
+        "api_url": "http://1bcd77d1-90db-4cbb-8381-88e5d6641104_vp1-api.blockchain.ibm.com:80"
       },
       {
-        "discovery_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp2-discovery.blockchain.ibm.com",
+        "discovery_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp2-discovery.blockchain.ibm.com",
         "discovery_port": 30303,
-        "api_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp2-api.blockchain.ibm.com",
+        "api_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp2-api.blockchain.ibm.com",
         "api_port_tls": 443,
         "api_port": 80,
         "type": "peer",
-        "network_id": "2915662a-7af9-4932-b9fe-e83adb30adcd",
-        "container_id": "a01246818df40971c3486ba00353bf53ecba747bba844e78f6cf554c7df76b50",
-        "id": "2915662a-7af9-4932-b9fe-e83adb30adcd_vp2",
-        "api_url": "http://2915662a-7af9-4932-b9fe-e83adb30adcd_vp2-api.blockchain.ibm.com:80"
+        "network_id": "1bcd77d1-90db-4cbb-8381-88e5d6641104",
+        "container_id": "f6a408f27b5f282f6915dd7e7b2c4022252ac0b3a68b9e1dc28703e7bb12713f",
+        "id": "1bcd77d1-90db-4cbb-8381-88e5d6641104_vp2",
+        "api_url": "http://1bcd77d1-90db-4cbb-8381-88e5d6641104_vp2-api.blockchain.ibm.com:80"
       }
     ],
     "ca": {
-      "2915662a-7af9-4932-b9fe-e83adb30adcd_ca": {
-        "url": "2915662a-7af9-4932-b9fe-e83adb30adcd_ca-api.blockchain.ibm.com:30303",
-        "discovery_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_ca-discovery.blockchain.ibm.com",
+      "1bcd77d1-90db-4cbb-8381-88e5d6641104_ca": {
+        "url": "1bcd77d1-90db-4cbb-8381-88e5d6641104_ca-api.blockchain.ibm.com:30303",
+        "discovery_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_ca-discovery.blockchain.ibm.com",
         "discovery_port": 30303,
-        "api_host": "2915662a-7af9-4932-b9fe-e83adb30adcd_ca-api.blockchain.ibm.com",
+        "api_host": "1bcd77d1-90db-4cbb-8381-88e5d6641104_ca-api.blockchain.ibm.com",
         "api_port_tls": 30303,
         "api_port": 80,
         "type": "ca",
-        "network_id": "2915662a-7af9-4932-b9fe-e83adb30adcd",
-        "container_id": "331123b7ed44b73884866701d00e24c793b4b520a91861edf2033089e3d16032"
+        "network_id": "1bcd77d1-90db-4cbb-8381-88e5d6641104",
+        "container_id": "bfaad9058199b943159bfa12adb4084263cbc59ac681fc5681c4d4b5ccaad83e"
       }
     },
     "users": [
       {
-        "username": "user_type0_f7bea1ede2",
-        "secret": "cffc4d85b5",
-        "enrollId": "user_type0_f7bea1ede2",
-        "enrollSecret": "cffc4d85b5"
+        "username": "user_type0_6d149034ce",
+        "secret": "396799a350",
+        "enrollId": "user_type0_6d149034ce",
+        "enrollSecret": "396799a350"
       },
       {
-        "username": "user_type0_68d4d8ef9d",
-        "secret": "7d7f260211",
-        "enrollId": "user_type0_68d4d8ef9d",
-        "enrollSecret": "7d7f260211"
+        "username": "user_type0_18096f7569",
+        "secret": "d8dc54d511",
+        "enrollId": "user_type0_18096f7569",
+        "enrollSecret": "d8dc54d511"
       },
       {
-        "username": "user_type1_eaeee30f18",
-        "secret": "fbdd51a638",
-        "enrollId": "user_type1_eaeee30f18",
-        "enrollSecret": "fbdd51a638"
+        "username": "user_type1_0fa4506222",
+        "secret": "47aef56615",
+        "enrollId": "user_type1_0fa4506222",
+        "enrollSecret": "47aef56615"
       },
       {
-        "username": "user_type1_c437183aaa",
-        "secret": "c794dadbcd",
-        "enrollId": "user_type1_c437183aaa",
-        "enrollSecret": "c794dadbcd"
+        "username": "user_type1_d8db978b5b",
+        "secret": "d96b2a720c",
+        "enrollId": "user_type1_d8db978b5b",
+        "enrollSecret": "d96b2a720c"
       },
       {
-        "username": "user_type2_7dcb6886c0",
-        "secret": "03320b3e87",
-        "enrollId": "user_type2_7dcb6886c0",
-        "enrollSecret": "03320b3e87"
+        "username": "user_type2_323c38cff9",
+        "secret": "22e4e11d52",
+        "enrollId": "user_type2_323c38cff9",
+        "enrollSecret": "22e4e11d52"
       },
       {
-        "username": "user_type2_f488b61a1a",
-        "secret": "483fc19c5a",
-        "enrollId": "user_type2_f488b61a1a",
-        "enrollSecret": "483fc19c5a"
+        "username": "user_type2_54f805fdac",
+        "secret": "27bf518247",
+        "enrollId": "user_type2_54f805fdac",
+        "enrollSecret": "27bf518247"
       },
       {
-        "username": "user_type3_d38d2c325b",
-        "secret": "ba6b622bdb",
-        "enrollId": "user_type3_d38d2c325b",
-        "enrollSecret": "ba6b622bdb"
+        "username": "user_type3_81e4746f6c",
+        "secret": "3cb77edb55",
+        "enrollId": "user_type3_81e4746f6c",
+        "enrollSecret": "3cb77edb55"
       },
       {
-        "username": "user_type3_39df8059cd",
-        "secret": "36010b47fc",
-        "enrollId": "user_type3_39df8059cd",
-        "enrollSecret": "36010b47fc"
+        "username": "user_type3_b6fec630c1",
+        "secret": "f8bc505ce3",
+        "enrollId": "user_type3_b6fec630c1",
+        "enrollSecret": "f8bc505ce3"
       },
       {
-        "username": "user_type4_1306947155",
-        "secret": "a06a5b3bd6",
-        "enrollId": "user_type4_1306947155",
-        "enrollSecret": "a06a5b3bd6"
+        "username": "user_type4_fee66338d8",
+        "secret": "0af15d5fc2",
+        "enrollId": "user_type4_fee66338d8",
+        "enrollSecret": "0af15d5fc2"
       },
       {
-        "username": "user_type4_a88372ca86",
-        "secret": "7e51339d18",
-        "enrollId": "user_type4_a88372ca86",
-        "enrollSecret": "7e51339d18"
+        "username": "user_type4_6be1292175",
+        "secret": "1f11209525",
+        "enrollId": "user_type4_6be1292175",
+        "enrollSecret": "1f11209525"
       }
     ]
   }
@@ -360,7 +360,10 @@ function cb_deployed(e, d){
 				console.log('hey new block, lets refresh and broadcast to all');
 				ibc.block_stats(chain_stats.height - 1, cb_blockstats);
 				wss.broadcast({msg: 'reset'});
-				chaincode.query.read(['_tradeIndex'], cb_got_index);
+
+				console.log("CALLING CHAINCODE READ");
+
+				chaincode.query.read(['_tradeindex'], cb_got_index);
 			}
 			
 			//got the block's stats, lets send the statistics
@@ -370,26 +373,42 @@ function cb_deployed(e, d){
 			}
 			
 			//got the trade index, lets get each trade
-			function cb_got_index(e, index){
+			function cb_got_index(e, index) {
+
+				console.log("SUCCEEDING IN CALLING CB GOT INDEX");
+
+				console.log(index);
+				console.log(e);
+
 				if(e != null) console.log('error:', e);
 				else{
 					try{
 						var json = JSON.parse(index);
+						console.log("~~~~~");
+						console.log(json);
+						console.log();
+						console.log("~~~~~");
+
 						for(var i in json){
 							console.log('!', i, json[i]);
 							chaincode.query.read([json[i]], cb_got_trade);							//iter over each, read their values
 						}
 					}
 					catch(e){
+						console.log("NO LUCK");
 						console.log('error:', e);
 					}
 				}
 			}
 			
 			//call back for getting a trade, lets send a message
-			function cb_got_trade(e, trade){
+			function cb_got_trade(e, trade) {
+
+				console.log("SUCCEEDING IN CALLING cb_got_trade");
+
 				if(e != null) console.log('error:', e);
 				else {
+					console.log("BROADCAST");
 					wss.broadcast({msg: 'trades', trade: trade});
 				}
 			}

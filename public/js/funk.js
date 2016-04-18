@@ -72,8 +72,14 @@ function nDig(n, digits){								//zero left pad to number of digits
 }
 
 function escapeHtml(str) {
-	str = str.replace(new RegExp('[<,>]', 'g'), '');
-	var div = document.createElement('div');
-	div.appendChild(document.createTextNode(str));
-	return div.innerHTML;
+
+	if (typeof str != 'undefined') {
+
+		str = str.replace(new RegExp('[<,>]', 'g'), '');
+		var div = document.createElement('div');
+		div.appendChild(document.createTextNode(str));
+		return div.innerHTML;
+
+	}
+
 }

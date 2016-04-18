@@ -1,99 +1,53 @@
 #settlePanel(hidden).panel
-	h1 Enrich &amp; Settle Trade
-	hr
-	
-	br
-	
-	p
-		button(type="button")#setupTradeButton.altButton.leftButton SETUP A TRADE
-		button(type="button")#viewTradeButton.altButton.rightButton.inactiveButton VIEW OPEN TRADES
-	
-	
-	// ------ Create Trade sub Panel ------ //
-	#createTrade
-		form(action="/create" method="POST")#tradeForm
-			
-			br
-			
-			#wantTradeSide
-				p I WANT
-				br
-				
-				select(name="want_quantity")
-					option 1
-				
-				span#wantColorWrap
-					include ./template/color_options.jade
-					//select(name="want_color")
-						option(value="white"  style="color:black") 	White
-						option(value="black"  style="color:black") 	Black
-						option(value="red"    style="color:red") 	Red
-						option(value="green"  style="color:green") 	Green
-						option(value="blue"   style="color:blue") 	Blue
-						option(value="purple" style="color:purple") Purple
-						option(value="pink"   style="color:pink") 	Pink
-						option(value="orange" style="color:orange") Orange
 
-				select(name="want_size")
-					option(value="35") Large
-					option(value="16") Small
-			
-			#willingTradeSide
-				div
-					p I AM WILLING TO TRADE AWAY
-					br
-					
-					.willingWrap
-						select(name="will_quantity")
-							option 1
-						
-						include ./template/color_options.jade
-						//select(name="will_color")
-							
-						select(name="will_size")
-							option(value="0") -
-							
-						span.fa.fa-remove.removeWilling
-				br
-				p(hidden)#cannotAdd You have no more marbles to offer
-				button(type="button")#addMarbleButton.altButton
-					span.fa.fa-plus &nbsp;&nbsp;&nbsp;
-					span ADD
-				
-				button(type="button")#tradeSubmit 
-					span.fa.fa-check &nbsp;&nbsp;&nbsp;
-					span OPEN A TRADE
-			
+	h1 Enrich &amp; Settle Trade
+	
+	#innerWrap
+		span.createball
 		
-	#openTrades(hidden)
-		br
-		label(style="line-height:18px;")
-			input(type="checkbox" style="vertical-align: bottom;" name="showMyTrades")
-			span.hint(style="color:#fff;") SHOW MY ORDERS
-		
-		table#myTradesTable
-			thead
-				tr 
-					th TIME
-					th WANT
-					th
-					th
-					th WILLING
-					th &nbsp;
-			tbody#myTradesBody
-		
-		table#openTradesTable
-			thead
-				tr 
-					th TIME
-					th COST
-					th
-					th
-					th GET
-					th
-					th
-					th &nbsp;
-			tbody#openTradesBody
-			
-		p#closedTradesWrap
-			.closedTrades
+		form(action="/create" method="POST")#createform
+			legend 
+				input(type="text" name="settlePanelTradeDate" id="settlePanelTradeDate" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;TRADE DATE (XX-XX-XXXX)
+			br
+
+			legend 
+				input(type="text" name="settlePanelValueDate" id="settlePanelValueDate" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;VALUE DATE (XX-XX-XXXX)
+			br
+
+			legend 
+				select(name="settlePanelOperation" id="settlePanelOperation" disabled="disabled")
+					option(value="BUY" disabled="disabled" selected="selected") Operation
+					option(value="BUY") Buy
+					option(value="SELL") Sell
+				span.hint &nbsp;&nbsp;BUY / SELL
+			br
+
+			legend 
+				input(type="text" name="settlePanelQuantity" id="settlePanelQuantity" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;INTEGER QUANTITY OF SHARES
+			br
+
+			legend 
+				input(type="text" name="settlePanelSecurity" id="settlePanelSecurity" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;SECURITY (STOCK TICKER FORMAT e.g. IBM)
+			br
+
+			legend 
+				input(type="text" name="settlePanelPrice" id="settlePanelPrice" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;DESIRED EXECUTION PRICE OF TRADE
+			br
+
+			legend 
+				input(type="text" name="settlePanelCounterparty" id="settlePanelCounterparty" value="hello, pending fill-in" disabled="disabled")
+				span.hint &nbsp;&nbsp;COUNTERPARTY
+			br
+
+			button(type="button")#markRevisionNecessaryButton
+				span.fa.fa-wrench.bgred.red &nbsp;&nbsp;
+				span REVISION NEEDED
+
+			button(type="button")#enrichSettleTradeButton
+				span.fa.fa-check &nbsp;&nbsp;
+				span ENRICH AND SETTLE
