@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/IBM-Blockchain/marbles.git"
+    "url": "https://github.com/ruslan120101/marbles.git"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
