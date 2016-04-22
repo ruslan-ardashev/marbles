@@ -284,10 +284,10 @@ $(document).on('ready', function() {
 		$('#userSelect').fadeOut(300);
 		$('select option[value="' + user.username + '"]').attr('selected', true);
 
-		$('#errorName').html('Home');
-		$('#errorNoticeText').html('Please use the Home button on the left to continue correct operation.');
-		$('#errorNotificationpHint').html('');
-		$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+		// $('#errorName').html('Home');
+		// $('#errorNoticeText').html('Please use the Home button on the left to continue correct operation.');
+		// $('#errorNotificationpHint').html('');
+		// $('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
 
 		// ruslan: maybe refresh all trades on home panel here
 
