@@ -16,8 +16,6 @@ $(document).on('ready', function() {
 	// HOME button on nav bar
 	$('#homeLink').click(function(){
 
-		
-
 	});
 
 	// TRADE button on nav bar
@@ -160,13 +158,86 @@ $(document).on('ready', function() {
 
 			} else if (user.username == bag.setup.USER3) {
 
-				// nothing to do here unless adding an "informational screen" in the future (just to read trade info)
-				console.log(this.id + " got clicked by observer");
+				// here we show relevant blocks
+				// go through visual blocks, highlight relevant ones
+				// first, clear old highlights if present
+				var blockWrap = $('#blockWrap')[0];
+				var children = blockWrap.children;
 
-				$('#errorName').html('Observer');
-				$('#errorNoticeText').html('No action required on Observer&#39;s part.');
-				$('#errorNotificationpHint').html('');
-				$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+				for (var childIndex in children) {
+
+					var block = children[childIndex];	// div
+
+					if (block.id != "details") {
+						block.className = "block";	
+					}
+
+				}
+
+				// present
+				if ($("#footerWrap").is(":visible")) {
+
+					// no need to pull up
+
+				} else {
+
+					// pull up BC footer
+					$("#viewBCWrap").click();
+
+				}
+
+				
+
+				var relevantIDs = [];
+
+				// go through blocks, remember ids relevant to us
+				for (var i in blocks) {
+
+					// get payload
+					var payload = atob(blocks[i].blockstats.transactions[0].payload);
+					var payloadLowerCase = payload.toLowerCase();
+					var contains = payloadLowerCase.indexOf(trade.timestamp.toLowerCase());
+				
+					if (contains != -1) {
+
+						relevantIDs.push(parseInt(i));
+
+					}
+
+				}
+
+				// go through visual blocks, highlight relevant ones
+				var blockWrap = $('#blockWrap')[0];
+				var children = blockWrap.children;
+
+				for (var childIndex in children) {
+
+					var block = children[childIndex];	// div
+					var numberHTML = block.innerHTML;
+					var value = parseInt(numberHTML);
+
+					var notNumber = isNaN(value);
+					var foundInArray = (jQuery.inArray(value, relevantIDs) !== -1);
+
+					if (!notNumber && foundInArray) {
+
+						console.log(value + " found in " + relevantIDs);
+
+						block.className += " lastblock";
+
+					}
+
+				}
+
+	// $('#blockWrap').append('<div class="block">' +  nDig(id, 3) + '</div>');
+	// $('.block:last').animate({opacity: 1, left: (block * 36)}, 600, function(){
+	// 	$('.lastblock').removeClass('lastblock');
+	// 	$('.block:last').addClass('lastblock');
+	// });
+	// block++;
+
+
+
 
 			}
 

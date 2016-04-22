@@ -28,7 +28,6 @@ function show_details(event, id){								//build the block details html
 	if(left < 0) left = 0;
 	var ccid = formatCCID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid, atob(blocks[id].blockstats.transactions[0].chaincodeID));
 	var payload = atob(blocks[id].blockstats.transactions[0].payload);
-
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';
 	html += '<p> UUID: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatUUID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid) + '</p>';
@@ -59,8 +58,8 @@ function new_block(newblck){									//rec a new block
 function build_block(id){										//build and append the block html
 	$('#blockWrap').append('<div class="block">' +  nDig(id, 3) + '</div>');
 	$('.block:last').animate({opacity: 1, left: (block * 36)}, 600, function(){
-		$('.lastblock').removeClass('lastblock');
-		$('.block:last').addClass('lastblock');
+		// $('.lastblock').removeClass('lastblock');
+		// $('.block:last').addClass('lastblock');
 	});
 	block++;
 }
