@@ -65,5 +65,5 @@ exports.SERVER.vcap_app = vcap_app;
 ////////////////////////////////////////////////////////////////////////////////////////////////
 exports.DEBUG = vcap_app;
 exports.USER1 = 'client';								
-exports.USER2 = 'broker';								
-exports.USER3 = 'observer';								
+exports.USER2 = 'back_office';								
+exports.USER3 = 'front_office';								

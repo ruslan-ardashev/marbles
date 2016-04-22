@@ -1,0 +1,60 @@
+#tradePanel(hidden).panel
+	h1#tradePanelTitleCreate Create &amp; Submit Trade
+	h1(hidden)#tradePanelTitleRevise Revise &amp; Re-Submit Trade
+	h1(hidden)#tradePanelTitleSettle Enrich &amp; Settle Trade
+	hr
+	
+	#innerWrap
+		form(action="/create" method="POST")#createform
+			legend 
+				input(type="text" name="tradedate" placeholder="Please enter trade date" disabled="disabled")#tradePanelInputTradeDate
+				span.hint &nbsp;&nbsp;TRADE DATE (XX-XX-XXXX)
+			br
+
+			legend 
+				input(type="text" name="valuedate" placeholder="Please enter value date" disabled="disabled")#tradePanelInputValueDate
+				span.hint &nbsp;&nbsp;VALUE DATE (XX-XX-XXXX)
+			br
+
+			legend 
+				select(name="operation" disabled="disabled" )#tradePanelSelectOperation
+					option(value="BUY") Buy
+					option(value="SELL") Sell
+				span.hint &nbsp;&nbsp;BUY / SELL
+			br
+
+			legend 
+				input(type="text" name="quantity" placeholder="Please enter integer quantity" disabled="disabled")#tradePanelInputQuantity
+				span.hint &nbsp;&nbsp;INTEGER QUANTITY OF SHARES
+			br
+
+			legend 
+				input(type="text" name="security" placeholder="Please enter name of security" disabled="disabled")#tradePanelInputSecurity
+				span.hint &nbsp;&nbsp;SECURITY (STOCK TICKER FORMAT e.g. IBM)
+			br
+
+			legend 
+				input(type="text" name="price" placeholder="Please enter desired price of security" disabled="disabled")#tradePanelInputPrice
+				span.hint &nbsp;&nbsp;DESIRED EXECUTION PRICE OF TRADE
+			br
+
+			legend 
+				input(type="text" name="counterparty" placeholder="Please enter name of counterparty" disabled="disabled")#tradePanelInputCounterParty
+				span.hint &nbsp;&nbsp;COUNTERPARTY
+			br
+
+			button(hidden type="button")#tradePanelButtonCreate
+				span.fa.fa-check &nbsp;&nbsp;
+				span SUBMIT TRADE			
+
+			button(hidden type="button")#tradePanelButtonRevise
+				span.fa.fa-check &nbsp;&nbsp;
+				span MARK REVISED &amp; RESUBMIT
+
+			button(hidden type="button")#tradePanelButtonRevisionNecessary
+				span.fa.fa-wrench.bgred.red &nbsp;&nbsp;
+				span REVISION NEEDED
+
+			button(hidden type="button")#tradePanelButtonSettle
+				span.fa.fa-check &nbsp;&nbsp;
+				span ENRICH &amp; SETTLE

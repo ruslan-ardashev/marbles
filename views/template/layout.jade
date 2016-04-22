@@ -33,38 +33,16 @@ html
 					$("#errorNotificationPanel").show();							//show the error/warning
 				}
 
-				function hideUserElements() {
-
-					// nav_part
-					if($('#enrichSettleLink').is(':visible')){
-						$('#enrichSettleLink').fadeOut(0);
-					}
-
-					// homePanel
-					if($('#user2wrap').is(':visible')){
-						$('#user2wrap').fadeOut(0);
-					}
-
-					if($('#user3wrap').is(':visible')){
-						$('#user3wrap').fadeOut(0);
-					}
-
-				}
-
-				hideUserElements();
-
 				//Tab Navigation, show the corresponding panel
 				$(".nav").click(function(){
+
 					var show = $(this).html().trim().toLowerCase();
 					showPanel(show);
+
 				});
+				
 				function showPanel(show){
 					if(show == '') show = 'home';										//default
-
-					console.log("ruslan: " + show);
-
-					//- console.log("ruslan: "+window.location.pathname);
-					//- console.log("ruslan: "+window.location.pathname.substring(0,3));		//- "/p1" or "/p2"
 
 					var part = window.location.pathname.substring(0,3);
 					window.history.pushState({},'', part + '/' + show);					//put it in url so we can f5
@@ -76,7 +54,7 @@ html
 					else{
 						$("#" + show + "Panel").fadeIn(300);
 						$(".selectedNav").removeClass("selectedNav");
-						$(this).addClass("selectedNav");
+						$("#" + show + "Panel").addClass("selectedNav");
 					}
 				}
 				
@@ -141,7 +119,7 @@ html
 					span.fa.fa-minus-circle#errorNoticeIcon
 					h2#errorName Error
 					#errorNoticeText &nbsp;
-					p.hint This application cannot run without the blockchain network :(
+					p.hint#errorNotificationpHint This application cannot run without the blockchain network :(
 				
 			#footerPanel
 				block footer

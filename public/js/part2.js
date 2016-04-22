@@ -10,165 +10,180 @@ $(document).on('ready', function() {
 
 	connect_to_server();
 
-	$('input[name="name"]').val('r' + randStr(6));
-	$('select option[value="' + bag.setup.USER1 + '"]').attr('selected', true);
-	console.log("ruslan: start: " + bag.setup.USER1);
 	// =================================================================================
 	// jQuery UI Events
 	// =================================================================================
-	$('#submitTrade').click(function() {
-
-		var dt = new Date();
-		var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-
-		var obj = 	{
-						type: 'create_and_submit_trade',
-						tradedate: $('input[name="tradedate"]').val(),
-						valuedate: $('input[name="valuedate"]').val(),
-						operation: $('select[name="operation"]').val(),
-						quantity: $('input[name="quantity"]').val(),
-						security: $('input[name="security"]').val(),
-						price: $('input[name="price"]').val(),
-						counterparty: $('input[name="counterparty"]').val(),
-						user: bag.setup.USER2,
-						timestamp: time,
-						settled: 0,
-						needsrevision: 0,
-						v: 2
-					};
-
-		if(obj.user && obj.security && obj.timestamp) {
-
-			console.log('creating trade, sending', obj);
-			ws.send(JSON.stringify(obj));
-			$('.panel').hide();
-			$('#homePanel').show();
-
-		}
-
-		return false;
-
-	});
-
-	$('#reviseTrade').click(function() {
-
-		// change to only have two arguments
-		var obj = 	{
-						type: 'create_and_submit_trade',
-						tradedate: $('input[name="tradedate"]').val(),
-						valuedate: $('input[name="valuedate"]').val(),
-						operation: $('select[name="operation"]').val(),
-						quantity: $('input[name="quantity"]').val(),
-						security: $('input[name="security"]').val(),
-						price: $('input[name="price"]').val(),
-						counterparty: $('input[name="counterparty"]').val(),
-						user: bag.setup.USER2,
-						timestamp: time,
-						settled: 0,
-						needsrevision: 0,
-						v: 2
-					};
-
-		if(obj.user && obj.security && obj.timestamp) {
-
-			console.log('creating trade, sending', obj);
-			ws.send(JSON.stringify(obj));
-			$('.panel').hide();
-			$('#homePanel').show();
-
-		}
-
-		return false;
-
-	});
-
+	// HOME button on nav bar
 	$('#homeLink').click(function(){
 
-		console.log("homeLink activated");
-		console.log('trades:', bag.trades);
-
-	});
-	
-	$('#submitTradeLink').click(function(){
-
-		console.log("submitTradeLink activated");
-		// $('input[name="name"]').val('r' + randStr(6));
+		
 
 	});
 
-	$('#enrichSettleTradeButton').click(function(){
+	// TRADE button on nav bar
+	$('#tradeLink').click(function(){
+		
+		disableTradePanelButtons();
+		clearTradePanelInputFields();
+		setTradePanelFieldsEnabled(true);
 
+		// enable create button
+		var button = $('button[id="tradePanelButtonCreate"]')[0];
+		button.hidden = false;
+
+	});
+
+	$('#tradePanelButtonCreate').click(function(){
+		
+		var obj = getTradeInformationFromTradePanel();
+		obj.type = 'create_and_submit_trade';
+
+		if(obj.timestamp && obj.user && obj.security) {
+
+			console.log('creating trade, sending', obj);
+			ws.send(JSON.stringify(obj));
+			$('.panel').hide();
+			$('#homePanel').show();
+
+		} else {
+
+			$('#errorName').html('Warning');
+			$('#errorNoticeText').html('Please do not leave any fields blank.');
+			$('#errorNotificationpHint').html('Please double check all entries and hit submit again.');
+			$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+
+		}
+
+		return false;
+
+	});
+
+	$('#tradePanelButtonRevise').click(function(){
+		
+		console.log("revised activated");
+		ws.send(JSON.stringify({type: 'mark_revised', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER2, v: 2}));
+		$('.panel').hide();
+		$('#homePanel').show();
+
+	});
+
+	$('#tradePanelButtonRevisionNecessary').click(function(){
+		
+		console.log("revisionNecessary activated");
+		ws.send(JSON.stringify({type: 'mark_revision_needed', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
+		$('.panel').hide();
+		$('#homePanel').show();
+
+	});
+
+	$('#tradePanelButtonSettle').click(function(){
+		
 		console.log("enrichSettleLink activated");
 		ws.send(JSON.stringify({type: 'enrich_and_settle', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
-
-	});
-
-	$('#markRevisionNecessaryButton').click(function(){
-
-		console.log("mark_revision_needed activated");
-		ws.send(JSON.stringify({type: 'mark_revision_needed', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
+		$('.panel').hide();
+		$('#homePanel').show();
 
 	});
 
 	// listen to clicks on the trade boxes that we move around
 	$(document).on("click", ".clickableTradeBox", function(){
-
+		
 		var trade = bag.trades[this.id];
 
 		if (bag.clickedTradeBoxTimestamp == null) bag.clickedTradeBoxTimestamp = "";
 		bag.clickedTradeBoxTimestamp = this.id;
+		
+		if (trade) {
 
-		console.log();console.log("found trade", trade);console.log();
+			if (user.username == bag.setup.USER1) {
 
-		if (user.username == bag.setup.USER1) {
+				console.log(this.id + " got clicked by client");
 
-			console.log(this.id + " got clicked by client");
+				// handle if awaiting revision, otherwise (for now) nothing needs to appear, trade's settled
 
-		} else if (user.username == bag.setup.USER2) {
+				// TODO ONLY IF AWAITING REVISION, OTHERWISE SHOW WARNING
+				if ((trade.settled == "0") && (trade.needsrevision == "1")) {
 
-			console.log(this.id + " got clicked by broker");	// (only) logical next step = settle screen
+					$('.panel').hide();
+					$('#tradePanel').show(0).delay(500, function() {
 
-			$('.panel').hide();
-			$('#settlePanel').show(0).delay(500, function() {
+						disableTradePanelButtons();
+						clearTradePanelInputFields();
+						setTradePanelFieldsEnabled(true);
+						prepopulateTradePanelWithTrade(trade);
 
-				$("#settlePanelTradeDate")[0].value = trade.tradedate;
-				$("#settlePanelValueDate")[0].value = trade.valuedate;
+						var button = $('button[id="tradePanelButtonRevise"]')[0];
+						button.hidden = false;
 
-				var optionsNodes = $("#settlePanelOperation")[0].childNodes;
-				if (trade.option == 'buy') {
-					optionsNodes[0].selected = false;
-					optionsNodes[1].selected = true;
-					optionsNodes[2].selected = false;
+					});
+
 				} else {
-					optionsNodes[0].selected = false;
-					optionsNodes[1].selected = false;
-					optionsNodes[2].selected = true;
+
+					$('#errorName').html('Wrong User');
+					$('#errorNoticeText').html('The trade you are selecting is either settled or is awaiting another user&#39;s input.');
+					$('#errorNotificationpHint').html('If Pending Back Office Action, try logging in as ' + bag.setup.USER2);
+					$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+					
 				}
 
-				$("#settlePanelQuantity")[0].value = trade.quantity;
-				$("#settlePanelSecurity")[0].value = trade.security;
-				$("#settlePanelPrice")[0].value = trade.price;
-				$("#settlePanelCounterparty")[0].value = trade.counterparty;
+			} else if (user.username == bag.setup.USER2) {
 
-			});
+				console.log(this.id + " got clicked by broker");	// (only) logical next step = settle screen
 
-		} else if (user.username == bag.setup.USER3) {
+				// TODO ONLY IF AWAITING ENRICHMENT OR MARKING FOR REVISION, OTHERWISE SHOW WARNING
+				if ((trade.settled == "0") && (trade.needsrevision == "0")) {
 
-			console.log(this.id + " got clicked by observer");
+					$('.panel').hide();
+					$('#tradePanel').show(0).delay(500, function() {
+
+						disableTradePanelButtons();
+						clearTradePanelInputFields();
+						setTradePanelFieldsEnabled(true);
+						prepopulateTradePanelWithTrade(trade);
+
+						var button = $('button[id="tradePanelButtonRevisionNecessary"]')[0];
+						button.hidden = false;
+
+						button = $('button[id="tradePanelButtonSettle"]')[0];
+						button.hidden = false;
+
+					});
+
+				} else {
+
+					$('#errorName').html('Wrong User');
+					$('#errorNoticeText').html('The trade you are selecting is either settled or is awaiting another user&#39;s input.');
+					$('#errorNotificationpHint').html('If Needs Revision, try logging in as ' + bag.setup.USER1);
+					$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+					
+				}
+
+			} else if (user.username == bag.setup.USER3) {
+
+				// nothing to do here unless adding an "informational screen" in the future (just to read trade info)
+				console.log(this.id + " got clicked by observer");
+
+				$('#errorName').html('Observer');
+				$('#errorNoticeText').html('No action required on Observer&#39;s part.');
+				$('#errorNotificationpHint').html('');
+				$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
+
+			}
+
+		} else {
+
+			$('#errorName').html('Error');
+			$('#errorNoticeText').html('Internal error occurred locating trade information.');
+			$('#errorNotificationpHint').html('');
+			$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
 
 		}
 
-		// homePanel, submitPanel, revisePanel, settlePanel
-		// $('.panel').hide();
-		// $('#homePanel').show();
-
 	});
 
-	//login events
-	$('#whoAmI').click(function(){												//drop down for login
-		
-		$('.panel').hide();
-		$('#homePanel').show();
+	// login events
+	// drop down for login
+	$('#whoAmI').click(function(){
 
 		if ($('#userSelect').is(':visible')) {
 
@@ -182,278 +197,128 @@ $(document).on('ready', function() {
 
 	});
 	
-	$('.userLine').click(function(){												//log in as someone else
+	// log in as someone else
+	$('.userLine').click(function(){												
 		
 		var name = $(this).attr('name');
 		user.username = name.toLowerCase();
+
+		if (user.username == bag.setup.USER1) {
+			$('#tradeLink').fadeIn(0);
+		} else {
+			$('#tradeLink').fadeOut(0);
+		}
 
 		$('#userField').html('HI ' + user.username.toUpperCase() + ' ');
 		$('#userSelect').fadeOut(300);
 		$('select option[value="' + user.username + '"]').attr('selected', true);
 
-		// appropriately hide elements
-		if (user.username == bag.setup.USER1) {
+		$('#errorName').html('Home');
+		$('#errorNoticeText').html('Please use the Home button on the left to continue correct operation.');
+		$('#errorNotificationpHint').html('');
+		$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
 
-			// nav_part
-			if($('#submitTradeLink').is(':hidden')){
-				$('#submitTradeLink').fadeIn(0);
-			}
-
-			if($('#reviseTradeLink').is(':hidden')){
-				$('#reviseTradeLink').fadeIn(0);
-			}
-
-			if($('#enrichSettleLink').is(':visible')){
-				$('#enrichSettleLink').fadeOut(0);
-			}
-
-			// homePanel
-			if($('#user2wrap').is(':visible')){
-				$('#user2wrap').fadeOut(0);
-			}
-
-			if($('#user3wrap').is(':visible')){
-				$('#user3wrap').fadeOut(0);
-			}
-
-			if($('#user1wrap').is(':hidden')){
-				$('#user1wrap').fadeIn(0);
-			}
-
-		} else if (user.username == bag.setup.USER2) {
-
-			// nav_part
-			if($('#enrichSettleLink').is(':hidden')){
-				$('#enrichSettleLink').fadeIn(0);
-			}
-
-			if($('#submitTradeLink').is(':visible')){
-				$('#submitTradeLink').fadeOut(0);
-			}
-
-			if($('#reviseTradeLink').is(':visible')){
-				$('#reviseTradeLink').fadeOut(0);
-			}
-
-			// homePanel
-			if($('#user1wrap').is(':visible')){
-				$('#user1wrap').fadeOut(0);
-			}
-
-			if($('#user3wrap').is(':visible')){
-				$('#user3wrap').fadeOut(0);
-			}
-
-			if($('#user2wrap').is(':hidden')){
-				$('#user2wrap').fadeIn(0);
-			}
-
-		} else if (user.username == bag.setup.USER3) {
-
-			// nav_part
-			if($('#submitTradeLink').is(':visible')){
-				$('#submitTradeLink').fadeOut(0);
-			}
-
-			if($('#enrichSettleLink').is(':visible')){
-				$('#enrichSettleLink').fadeOut(0);
-			}
-
-			if($('#reviseTradeLink').is(':visible')){
-				$('#reviseTradeLink').fadeOut(0);
-			}
-
-			// homePanel
-			if($('#user2wrap').is(':visible')){
-				$('#user2wrap').fadeOut(0);
-			}
-
-			if($('#user1wrap').is(':visible')){
-				$('#user1wrap').fadeOut(0);
-			}
-
-			if($('#user3wrap').is(':hidden')){
-				$('#user3wrap').fadeIn(0);
-			}
-
-		}
+		// ruslan: maybe refresh all trades on home panel here
 
 	});
 	
-	// ruslan: use inactiveButton on navBar perhaps
-	//trade events
-	// $('#setupTradeButton').click(function(){
-
-	// 	build_trades(bag.trades);
-	// 	$('.inactiveButton').removeClass('inactiveButton');
-	// 	$('#viewTradeButton').addClass('inactiveButton');
-	// 	$('#openTrades').fadeOut();
-	// 	$('#createTrade').fadeIn();
-
-	// });
-	
-	// $('#viewTradeButton').click(function(){
-
-	// 	build_trades(bag.trades);
-
-	// 	$('.inactiveButton').removeClass('inactiveButton');
-	// 	$('#setupTradeButton').addClass('inactiveButton');
-	// 	$('#openTrades').fadeIn();
-	// 	$('#createTrade').fadeOut();
-
-	// });
-	
-	// $('.removeWilling:first').hide();
-
-	// $('#addMarbleButton').click(function(){
-
-	// 	var count = 0;
-	// 	var marble_count = 0;
-	// 	$('.willingWrap').each(function(){
-	// 		count++;
-	// 	});
-	// 	for(var i in bag.marbles){
-	// 		if(bag.marbles[i].user.toLowerCase() == user.username.toLowerCase()){
-	// 			marble_count++;
-	// 		}
-	// 	}
-	// 	if(count+1 <= marble_count && count <= 3){									//lets limit the total number... might get out of hand
-	// 		var temp = $('.willingWrap:first').html();
-	// 		$('.willingWrap:first').parent().append('<div class="willingWrap">' + temp + '</div>');
-	// 		$('.removeWilling').show();
-	// 		$('.removeWilling:first').hide();
-	// 	}
-	// 	else{
-	// 		$('#cannotAdd').fadeIn();
-	// 		setTimeout(function(){ $('#cannotAdd').fadeOut(); }, 1500);
-	// 	}
-
-	// });
-	
-	// $(document).on('click', '.removeWilling', function(){
-	// 	$(this).parent().remove();
-	// });
-	
-	// $('#tradeSubmit').click(function(){
-	// 	var msg = 	{
-	// 					type: 'open_trade',
-	// 					v: 2,
-	// 					user: user.username,
-	// 					want: {
-	// 						color: $('#wantColorWrap').find('.colorSelected').attr('color'),
-	// 						size: $('select[name="want_size"]').val()
-	// 					},
-	// 					willing: []
-	// 				};
-					
-	// 	$('.willingWrap').each(function(){
-	// 		//var q = $(this).find('select[name='will_quantity']').val();
-	// 		var color = $(this).find('.colorSelected').attr('color');
-	// 		var size = $(this).find('select[name="will_size"]').val();
-	// 		//console.log('!', q, color, size);
-	// 		var temp = 	{
-	// 						color: color,
-	// 						size: size
-	// 					};
-	// 		msg.willing.push(temp);
-	// 	});
-		
-	// 	console.log('sending', msg);
-	// 	ws.send(JSON.stringify(msg));
-	// 	$('.panel').hide();
-	// 	$('#homePanel').show();
-	// 	$('.colorValue').html('Color');
-	// });
-	
-	// $(document).on('click', '.confirmTrade', function(){
-	// 	console.log('trading...');
-	// 	var i = $(this).attr('trade_pos');
-	// 	var x = $(this).attr('willing_pos');
-	// 	var msg = 	{
-	// 					type: 'perform_trade',
-	// 					v: 2,
-	// 					id: bag.trades[i].timestamp.toString(),
-	// 					opener:{											//marble he is giving up
-	// 						user: bag.trades[i].user,
-	// 						color: bag.trades[i].willing[x].color,
-	// 						size: bag.trades[i].willing[x].size.toString(),
-	// 					},
-	// 					closer:{											//marble hs ig giving up
-	// 						user: user.username,							//guy who is logged in
-	// 						name: $(this).attr('name'),
-	// 						color: '',										//dsh to do, add these and remove above
-	// 						size: ''
-	// 					}
-	// 				};
-	// 	ws.send(JSON.stringify(msg));
-	// 	$('#notificationPanel').animate({width:'toggle'});
-	// });
-	
-	// $(document).on('click', '.willingWrap .colorOption', function(){
-	// 	set_my_size_options(user.username, this);
-	// });
-	
-	// $('input[name="showMyTrades"]').change(function(){
-	// 	if($(this).is(':checked')){
-	// 		$('#myTradesTable').fadeIn();
-	// 	}
-	// 	else{
-	// 		$('#myTradesTable').fadeOut();
-	// 	}
-	// });
-	
-	// $(document).on('click', '.removeTrade', function(){
-	// 	var trade = find_trade($(this).attr('trade_timestamp'));
-	// 	$(this).parent().parent().addClass('invalid');
-	// 	console.log('trade', trade);
-	// 	var msg = 	{
-	// 					type: 'remove_trade',
-	// 					v: 2,
-	// 					id: trade.timestamp.toString(),
-	// 				};
-	// 	ws.send(JSON.stringify(msg));
-	// });
 });
 
 
 // =================================================================================
-// Helper Fun
+// Handler Funcs
 // =================================================================================
-//transfer selected ball to user
+// Convenience "Variable" - array of all input & select fields on Trade Panel
+function tradePanelFields() {
 
-// ruslan: USE THIS TO INITIATE TRANSFERS ON SUBMIT
+	return [
+		$('input[id="tradePanelInputTradeDate"]')[0],
+		$('input[id="tradePanelInputValueDate"]')[0],
+		$('select[id="tradePanelSelectOperation"]')[0],
+		$('input[id="tradePanelInputQuantity"]')[0],
+		$('input[id="tradePanelInputSecurity"]')[0],
+		$('input[id="tradePanelInputPrice"]')[0],
+		$('input[id="tradePanelInputCounterParty"]')[0]
+	];
 
-// function transfer(marbleName, user){
-// 	if(marbleName){
-// 		console.log('transfering', marbleName);
-// 		var obj = 	{
-// 						type: 'transfer',
-// 						name: marbleName,
-// 						user: user,
-// 						v: 2
-// 					};
-// 		ws.send(JSON.stringify(obj));
-// 	}
-// }
-
-// modified, all trades are represented as "Large"
-function sizeMe(mm){
-	return 'Large';
 }
 
-function find_trade(timestamp){
+function setTradePanelFieldsEnabled(isEnabled) {
 
-	for(var i in bag.trades){
+	var fields = tradePanelFields();
 
-		if(bag.trades[i].timestamp){
-			return bag.trades[i];
-		}
+	for (var i in fields) {
+
+		fields[i].disabled = !isEnabled;
 
 	}
 
-	return null;
+}
+
+
+function disableTradePanelButtons() {
+
+	$('button[id="tradePanelButtonCreate"]')[0].hidden = true;
+	$('button[id="tradePanelButtonRevise"]')[0].hidden = true;
+	$('button[id="tradePanelButtonRevisionNecessary"]')[0].hidden = true;
+	$('button[id="tradePanelButtonSettle"]')[0].hidden = true;
 
 }
+
+function clearTradePanelInputFields() {
+
+	$('input[id="tradePanelInputTradeDate"]')[0].value = "";
+	$('input[id="tradePanelInputValueDate"]')[0].value = "";
+	$('input[id="tradePanelInputQuantity"]')[0].value = "";
+	$('input[id="tradePanelInputSecurity"]')[0].value = "";
+	$('input[id="tradePanelInputPrice"]')[0].value = "";
+	$('input[id="tradePanelInputCounterParty"]')[0].value = "";
+
+}
+
+function prepopulateTradePanelWithTrade(trade) {
+
+	$('input[id="tradePanelInputTradeDate"]')[0].value = trade.tradedate;
+	$('input[id="tradePanelInputValueDate"]')[0].value = trade.valuedate;
+	$('input[id="tradePanelInputQuantity"]')[0].value = trade.quantity;
+	$('input[id="tradePanelInputSecurity"]')[0].value = trade.security;
+	$('input[id="tradePanelInputPrice"]')[0].value = trade.price;
+	$('input[id="tradePanelInputCounterParty"]')[0].value = trade.counterparty;
+	$('select[id="tradePanelSelectOperation"]').value = trade.operation;
+
+}
+
+// =================================================================================
+// Helper Fun
+// =================================================================================
+function getTradeInformationFromTradePanel() {
+
+	console.log("oi");
+
+	var dt = new Date();
+	var time = dt.getMonth() + "M:" + dt.getDay() + "D:" + dt.getHours() + "H:" + dt.getMinutes() + "M:" + dt.getSeconds() + "S";
+ 
+	var returnObject = {
+			tradedate: $('input[id="tradePanelInputTradeDate"]').val(),
+			valuedate: $('input[id="tradePanelInputValueDate"]').val(),
+			operation: $('select[id="tradePanelSelectOperation"]').val(),
+			quantity: $('input[id="tradePanelInputQuantity"]').val(),
+			security: $('input[id="tradePanelInputSecurity"]').val(),
+			price: $('input[id="tradePanelInputPrice"]').val(),
+			counterparty: $('input[id="tradePanelInputCounterParty"]').val(),
+			user: user.username,
+			timestamp: time,
+			settled: 0,
+			needsrevision: 0,
+			v: 2
+	};
+
+	console.log(returnObject);
+
+	return returnObject;
+
+}
+
 
 // =================================================================================
 // Socket Stuff
@@ -461,6 +326,7 @@ function find_trade(timestamp){
 function connect_to_server() {
 
 	var connected = false;
+
 	connect();
 		
 	function connect(){
@@ -523,9 +389,7 @@ function connect_to_server() {
 
 				console.log("ruslan: REACHING HERE 2");
 
-				$('#user3wrap').html('');
-				$('#user2wrap').html('');
-				$('#user1wrap').html('');
+				$('#userwrap').html('');
 
 			} else if (data.msg === 'trades') {
 
@@ -555,15 +419,22 @@ function connect_to_server() {
 	}
 
 	function onError(evt){
+
 		console.log('ERROR ', evt);
-		if(!connected && bag.e == null){											//don't overwrite an error message
+
+		if(!connected && bag.e == null) {											//don't overwrite an error message
+
 			$('#errorName').html('Warning');
 			$('#errorNoticeText').html('Waiting on the node server to open up so we can talk to the blockchain. ');
 			$('#errorNoticeText').append('This app is likely still starting up. ');
 			$('#errorNoticeText').append('Check the server logs if this message does not go away in 1 minute. ');
+			$('#errorNotificationpHint').html = "This application cannot run without the blockchain network :(";
 			$('#errorNotificationPanel').fadeIn();
+
 		}
+
 	}
+
 }
 
 
@@ -578,134 +449,53 @@ function build_trade(trade) {
 
 	var timestamp = "";
 
-	if (trade.timestamp != null) {
+	if (trade.timestamp) {
 
+		console.log("ruslan created bag.trades[key]");
 		timestamp = String(trade.timestamp);
-		bag.trades[timestamp] = trade;								//store the trade for posterity
+		bag.trades[timestamp] = trade;
+
+		console.log(bag.trades[timestamp]);
+		console.log();
 
 	} else {
 		console.log("ruslan: ERROR creating bag.trades[key], no timestamp present");
 	}
 
-	html += '<span id = "' + timestamp + '" title = "' + trade.security + '" class="clickableTradeBox nav fa fa-5x fa-border"><p class="fa fa-fw white" style="width: 175px; height: 75px; text-align: center;">' + trade.security.toUpperCase() + '</p><br/><p class="hint" style="font-size: 16px;">Time: ' +timestamp + '</p><p class="hint" style="font-size: 16px;">Price: ' + trade.price + '</p><p class="hint" style="font-size: 16px;">Quantity: ' + trade.quantity + '</p><p class="hint" style="font-size: 16px;">Trade Date: ' + trade.tradedate + '</p><p class="hint" style="font-size: 16px;">Value Date: ' + trade.valuedate + '</p></span>';
+	var tradeStatus = '';
 
-	if (trade.user == bag.setup.USER1) {
-		$('#user1wrap').append(html);
-		$('#user3wrap').append(html);
-	} else if (trade.user == bag.setup.USER2) {
-		$('#user2wrap').append(html);
+	// if adding again, remove older version
+	$(document.getElementById(timestamp)).remove();
+
+	// add new version
+	if (parseInt(trade.settled) == 1) {
+
+		// at client, settled
+		tradeStatus = '<p class="valid" style="text-align: center; font-size: 16px;">Settled</p>';
+
+	} else if (parseInt(trade.needsrevision) == 1) {
+
+		// at client, settled
+		tradeStatus = '<p class="error" style="text-align: center; font-size: 16px;">Pending Client Revision</p>';
+
+	} else {
+
+		// at back_office, awaiting marking for revision or enrichment & settlement
+		tradeStatus = '<p class="php_error" style="text-align: center; font-size: 16px;">Pending Back Office Action</p>';
+
 	}
 
-	console.log('trades', bag.trades);
+	var tradeBoxClasses = 'clickableTradeBox nav fa fa-5x fa-border';
+	var tradeBoxStyle = 'width: 225px; text-align: center;';
+
+	html += '<span id = "' + timestamp + '" class="' + tradeBoxClasses + '" style="' + tradeBoxStyle + '"><p class="fa white">' + trade.security.toUpperCase() + '</p><br/>';
+
+	html += tradeStatus;
+
+	html += '<p class="hint" style="font-size: 16px;">Time: ' +timestamp + '</p><p class="hint" style="font-size: 16px;">Price: ' + trade.price + '</p><p class="hint" style="font-size: 16px;">Quantity: ' + trade.quantity + '</p><p class="hint" style="font-size: 16px;">Trade Date: ' + trade.tradedate + '</p><p class="hint" style="font-size: 16px;">Value Date: ' + trade.valuedate + '</p></span>';
+
+	$('#userwrap').append(html);
+
+	// console.log('trades', bag.trades);
 
 }
-
-// function build_trades(trades){
-// 	var html = '';
-// 	bag.trades = trades;						//store the trades for posterity
-// 	console.log('trades:', bag.trades);
-	
-// 	for(var i in trades){
-// 		for(var x in trades[i].willing){
-// 			//console.log(trades[i]);
-// 			var style = ' ';
-// 			var buttonStatus = '';
-			
-// 			if(user.username.toLowerCase() != trades[i].user.toLowerCase()){				//don't show trades with myself
-// 				var name = find_valid_marble(user.username, trades[i].want.color, trades[i].want.size);
-// 				if(name == null) {								//don't allow trade if I don't have the correct marble
-// 					style = 'invalid';
-// 					buttonStatus = 'disabled="disabled"';
-// 				}
-// 				html += '<tr class="' + style + '">';
-// 				html +=		'<td>' + formatDate(Number(trades[i].timestamp), '%M/%d %I:%m%P') + '</td>';
-// 				html +=		'<td>1</td>';
-// 				html +=		'<td><span class="fa fa-2x fa-circle ' + trades[i].want.color + '"></span></td>';
-// 				html +=		'<td>' + sizeMe(trades[i].want.size) + '</td>';
-// 				html +=		'<td>1</td>';
-// 				html +=		'<td><span class="fa fa-2x fa-circle ' + trades[i].willing[x].color + '"></span></td>';
-// 				html +=		'<td>' + sizeMe(trades[i].willing[x].size) + '</td>';
-// 				html +=		'<td>';
-// 				html +=			'<button type="button" class="confirmTrade altButton" ' + buttonStatus + ' name="' + name + '" trade_pos="' + i + '" willing_pos="' + x + '">';
-// 				html +=				'<span class="fa fa-exchange"> &nbsp;&nbsp;TRADE</span>';
-// 				html +=			'</button>';
-// 				html += 	'</td>';
-// 				html += '</tr>';
-// 			}
-// 		}
-// 	}
-// 	if(html === '') html = '<tr><td>nothing here...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
-// 	$('#openTradesBody').html(html);
-	
-// 	build_my_trades(trades);
-// }
-
-// function build_my_trades(trades){
-// 	var html = '';
-// 	for(var i in trades){
-// 		//console.log(trades[i]);
-// 		var style = ' ';
-		
-// 		if(user.username.toLowerCase() == trades[i].user.toLowerCase()){				//only show trades with myself
-// 			html += '<tr class="' + style + '">';
-// 			html +=		'<td>' + formatDate(Number(trades[i].timestamp), '%M/%d %I:%m%P') + '</td>';
-// 			html +=		'<td>1</td>';
-// 			html +=		'<td><span class="fa fa-2x fa-circle ' + trades[i].want.color + '"></span></td>';
-// 			html +=		'<td>' + sizeMe(trades[i].want.size) + '</td>';
-// 			html +=		'<td>';
-// 			for(var x in trades[i].willing){
-// 				html +=		'<p>1 <span class="fa fa-2x fa-circle ' + trades[i].willing[x].color + '"></span>&nbsp; &nbsp;' + sizeMe(trades[i].willing[x].size) + '</p>';
-// 			}
-// 			html += 	'</td>';
-// 			html +=		'<td><span class="fa fa-remove removeTrade" trade_timestamp="' + trades[i].timestamp + '"></span></td>';
-// 			html += '</tr>';
-// 		}
-// 	}
-// 	if(html === '') html = '<tr><td>nothing here...</td><td></td><td></td><td></td><td></td><td></td></tr>';
-// 	$('#myTradesBody').html(html);
-// }
-
-// function set_my_color_options(username){
-// 	var has_colors = {};
-// 	for(var i in bag.marbles){
-// 		if(bag.marbles[i].user.toLowerCase() == username.toLowerCase()){		//mark it as needed
-// 			has_colors[bag.marbles[i].color] = true;
-// 		}
-// 	}
-	
-// 	//console.log('has_colors', has_colors);
-// 	var colors = ['white', 'black', 'red', 'green', 'blue', 'purple', 'pink', 'orange', 'yellow'];
-// 	$('.willingWrap').each(function(){
-// 		for(var i in colors){
-// 			//console.log('checking if user has', colors[i]);
-// 			if(!has_colors[colors[i]]) {
-// 				//console.log('removing', colors[i]);
-// 				$(this).find('.' + colors[i] + ':first').hide();
-// 			}
-// 			else {
-// 				$(this).find('.' + colors[i] + ':first').show();
-// 				//console.log('yep');
-// 			}
-// 		}
-// 	});
-// }
-
-// function set_my_size_options(username, colorOption){
-// 	var color = $(colorOption).attr('color');
-// 	//console.log('color', color);
-// 	var html = '';
-// 	var sizes = {};
-// 	for(var i in bag.marbles){
-// 		if(bag.marbles[i].user.toLowerCase() == username.toLowerCase()){		//mark it as needed
-// 			if(bag.marbles[i].color.toLowerCase() == color.toLowerCase()){
-// 				sizes[bag.marbles[i].size] = true;
-// 			}
-// 		}
-// 	}
-	
-// 	console.log('valid sizes:', sizes);
-// 	for(i in sizes){
-// 		html += '<option value="' + i + '">' + sizeMe(i) + '</option>';					//build it
-// 	}
-// 	$(colorOption).parent().parent().next('select[name="will_size"]').html(html);
-// }
