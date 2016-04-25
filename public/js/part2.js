@@ -16,6 +16,9 @@ $(document).on('ready', function() {
 	// HOME button on nav bar
 	$('#homeLink').click(function(){
 
+		$('#tradePanel').hide();
+		$('#homePanel').show();
+
 	});
 
 	// TRADE button on nav bar
@@ -29,6 +32,10 @@ $(document).on('ready', function() {
 		var button = $('button[id="tradePanelButtonCreate"]')[0];
 		button.hidden = false;
 
+		// display
+		$('#homePanel').hide();
+		$('#tradePanel').show();
+
 	});
 
 	$('#tradePanelButtonCreate').click(function(){
@@ -40,7 +47,7 @@ $(document).on('ready', function() {
 
 			console.log('creating trade, sending', obj);
 			ws.send(JSON.stringify(obj));
-			$('.panel').hide();
+			$('#tradePanel').hide();
 			$('#homePanel').show();
 
 		} else {
@@ -60,7 +67,7 @@ $(document).on('ready', function() {
 		
 		console.log("revised activated");
 		ws.send(JSON.stringify({type: 'mark_revised', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER2, v: 2}));
-		$('.panel').hide();
+		$('#tradePanel').hide();
 		$('#homePanel').show();
 
 	});
@@ -69,7 +76,7 @@ $(document).on('ready', function() {
 		
 		console.log("revisionNecessary activated");
 		ws.send(JSON.stringify({type: 'mark_revision_needed', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
-		$('.panel').hide();
+		$('#tradePanel').hide();
 		$('#homePanel').show();
 
 	});
@@ -78,7 +85,7 @@ $(document).on('ready', function() {
 		
 		console.log("enrichSettleLink activated");
 		ws.send(JSON.stringify({type: 'enrich_and_settle', timestamp: bag.clickedTradeBoxTimestamp, user: bag.setup.USER1, v: 2}));
-		$('.panel').hide();
+		$('#tradePanel').hide();
 		$('#homePanel').show();
 
 	});
@@ -102,7 +109,7 @@ $(document).on('ready', function() {
 				// TODO ONLY IF AWAITING REVISION, OTHERWISE SHOW WARNING
 				if ((trade.settled == "0") && (trade.needsrevision == "1")) {
 
-					$('.panel').hide();
+					$('#homePanel').hide();
 					$('#tradePanel').show(0).delay(500, function() {
 
 						disableTradePanelButtons();
@@ -131,7 +138,7 @@ $(document).on('ready', function() {
 				// TODO ONLY IF AWAITING ENRICHMENT OR MARKING FOR REVISION, OTHERWISE SHOW WARNING
 				if ((trade.settled == "0") && (trade.needsrevision == "0")) {
 
-					$('.panel').hide();
+					$('#homePanel').hide();
 					$('#tradePanel').show(0).delay(500, function() {
 
 						disableTradePanelButtons();
