@@ -549,7 +549,7 @@ function build_trade(trade) {
 	if (parseInt(trade.settled) == 1) {
 
 		// at client, settled
-		tradeStatus = '<p class="valid" style="text-align: center; font-size: 16px;">Settled</p>';
+		tradeStatus = '<p class="valid" style="text-align: center; font-size: 16px;">Captured</p>';
 
 	} else if (parseInt(trade.needsrevision) == 1) {
 
