@@ -65,6 +65,6 @@ exports.SERVER.vcap_app = vcap_app;
 ////////////////////////////////////////     Common     ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 exports.DEBUG = vcap_app;
-exports.USER1 = 'investment_manager';								
-exports.USER2 = 'processing_group';								
-exports.USER3 = 'client_servicing_team';								
+exports.USER1 = 'client';								
+exports.USER2 = 'back_office';								
+exports.USER3 = 'front_office';								
