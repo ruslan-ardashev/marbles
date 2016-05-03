@@ -126,7 +126,7 @@ $(document).on('ready', function() {
 
 					$('#errorName').html('Wrong User');
 					$('#errorNoticeText').html('The trade you are selecting is either settled or is awaiting another user&#39;s input.');
-					$('#errorNotificationpHint').html('If Pending Back Office Action, try logging in as ' + bag.setup.USER2);
+					$('#errorNotificationpHint').html('If Pending Processing Group Action, try logging in as ' + bag.setup.USER2);
 					$('#errorNotificationPanel').fadeIn().delay(2000).fadeOut();
 					
 				}
@@ -554,12 +554,12 @@ function build_trade(trade) {
 	} else if (parseInt(trade.needsrevision) == 1) {
 
 		// at client, settled
-		tradeStatus = '<p class="error" style="text-align: center; font-size: 16px;">Pending Client Revision</p>';
+		tradeStatus = '<p class="error" style="text-align: center; font-size: 16px;">Pending Investment Manager Revision</p>';
 
 	} else {
 
 		// at back_office, awaiting marking for revision or enrichment & settlement
-		tradeStatus = '<p class="php_error" style="text-align: center; font-size: 16px;">Pending Back Office Action</p>';
+		tradeStatus = '<p class="php_error" style="text-align: center; font-size: 16px;">Pending Processing Group Action</p>';
 
 	}
 
