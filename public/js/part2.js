@@ -90,6 +90,13 @@ $(document).on('ready', function() {
 
 	});
 
+	$('#homePanelButtonClearAllTrades').click(function(){
+		
+		console.log("ClearAllTrades activated");
+		ws.send(JSON.stringify({type: 'clear_all_trades', v: 2}));
+
+	});
+
 	// listen to clicks on the trade boxes that we move around
 	$(document).on("click", ".clickableTradeBox", function(){
 		

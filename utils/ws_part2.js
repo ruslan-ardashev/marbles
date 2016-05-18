@@ -54,6 +54,11 @@ module.exports.process_msg = function(ws, data) {
 			console.log('ruslan: mark_revised');
 			chaincode.invoke.mark_revised([data.timestamp, data.user], inefficientCallback);
 
+		} else if (data.type == 'clear_all_trades') {
+
+			console.log('ruslan: clear_all_trades');
+			chaincode.invoke.clear_all_trades(null, inefficientCallback);
+
 		}
 
 	}

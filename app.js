@@ -136,7 +136,7 @@ var ibc = new Ibc1();
 // ==================================
 //this hard coded list is intentionaly left here, feel free to use it when initially starting out
 //please create your own network when you are up and running
-var manual ={
+var manual = {
   "credentials": {
     "peers": [
       {
